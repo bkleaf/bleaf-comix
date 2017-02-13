@@ -1,5 +1,6 @@
 package com.bleaf.comix.server.service;
 
+import com.bleaf.comix.server.configuration.PathType;
 import com.bleaf.comix.server.repository.ComixRepository;
 import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,18 @@ public class ComixService {
         return comixRepository.getPath(path);
     }
 
-    public boolean isZip(String path) {
+
+
+    private PathType getPathType(String path) {
+
+
+
+        return PathType.DIR;
+    }
+
+
+
+    private boolean isZip(String path) {
         String ext = Files.getFileExtension(path);
 
         String fileName = Files.getNameWithoutExtension(path);
@@ -34,6 +46,8 @@ public class ComixService {
         log.info("zip path = {} : {} : {}", path, fileName, ext);
         if(ext.equalsIgnoreCase("zip") ||
                 ext.equalsIgnoreCase("cbz")) {
+
+
             return true;
         }
 

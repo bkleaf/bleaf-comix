@@ -1,9 +1,9 @@
 bleafcomix:
   exclude:
-    - .
-    - ..
-    - @eaDir
-    - Thumbs.db
-    - .DS_Store
-    - @Recycle
-    - __MACOSX
+    - "."
+    - ".."
+    - "@eaDir"
+    - "Thumbs.db"
+    - ".DS_Store"
+    - "@Recycle"
+    - "__MACOSX"
