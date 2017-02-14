@@ -7,3 +7,14 @@ bleafcomix:
     - ".DS_Store"
     - "@Recycle"
     - "__MACOSX"
+  image_type:
+    - "jpg"
+    - "gif"
+    - "png"
+    - "tif"
+    - "bmp"
+    - "jpeg"
+    - "tiff"
+  compress_type:
+    zip: ["zip", "cbz"]
+    rar: ["rar", "cbr"]
