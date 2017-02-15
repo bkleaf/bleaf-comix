@@ -11,6 +11,7 @@ import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by drg75 on 2017-02-12.
@@ -27,12 +28,7 @@ public class ComixController {
         String path = this.getMatchPath(request);
         log.info("request path = {}", path);
 
-        List<String> list = comixService.getPath(path);
-        if(list != null) {
-            log.info("list = {}", list.size());
-        }
-
-        return "hello";
+        return comixService.getPath(path);
     }
 
     private String getMatchPath(final HttpServletRequest request) {

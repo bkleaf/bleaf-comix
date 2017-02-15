@@ -1,20 +1,25 @@
 bleafcomix:
-  exclude:
-    - "."
-    - ".."
-    - "@eaDir"
-    - "Thumbs.db"
-    - ".DS_Store"
-    - "@Recycle"
-    - "__MACOSX"
-  image_type:
-    - "jpg"
-    - "gif"
-    - "png"
-    - "tif"
-    - "bmp"
-    - "jpeg"
-    - "tiff"
-  compress_type:
-    zip: ["zip", "cbz"]
-    rar: ["rar", "cbr"]
+  repository:
+    default_root: "/Users/bleaf/"
+    exclude:
+      - "."
+      - ".."
+      - "@eaDir"
+      - "Thumbs.db"
+      - ".DS_Store"
+      - "@Recycle"
+      - "__MACOSX"
+    image_type:
+      - "jpg"
+      - "gif"
+      - "png"
+      - "tif"
+      - "bmp"
+      - "jpeg"
+      - "tiff"
+    compress_type:
+      zip: ["zip", "cbz"]
+      rar: ["rar", "cbr"]
+
+server:
+  port: 8888

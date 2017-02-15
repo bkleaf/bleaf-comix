@@ -1,6 +1,7 @@
 package com.bleaf.comix.server.repository;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -12,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by drg75 on 2017-02-12.
@@ -19,12 +21,14 @@ import java.util.List;
 @Slf4j
 @Data
 @Repository
-@ConfigurationProperties(prefix = "bleafcomix")
+@ConfigurationProperties(prefix = "bleafcomix.repository")
 public class ComixRepository {
 
-    private final static String WINDOW_DEFAULT_DRIVE="D:";
+    private String defaultRoot;
 
-    public List<String> exclude = Lists.newArrayList();
+    private List<String> exclude;
+    private List<String> imageType;
+    private Map<String, List<String>> compressType;
 
     /**
      * root 하위 1depth의 디렉토리 또는 file list를 돌려준다.
@@ -32,31 +36,37 @@ public class ComixRepository {
      * @param root
      * @return
      */
-    public List<String> getPath(String root) {
+    public Map<String, List<String>> getPath(String root) {
         log.trace("request Root Path = {}", root);
-        List<String> list = Lists.newLinkedList();
+        List<String> fileList = Lists.newLinkedList();
+        List<String> dirList = Lists.newLinkedList();
 
-        Path direcotryPath = Paths.get(WINDOW_DEFAULT_DRIVE, root);
+        Path direcotryPath = Paths.get(defaultRoot, root);
         if (Files.isDirectory(direcotryPath)) {
             try (DirectoryStream<Path> stream =
                          Files.newDirectoryStream(direcotryPath)) {
                 for (Path path : stream) {
-                    log.debug("path = {} : {}", Files.isRegularFile(path), path);
-                    list.add(path.toString());
+
+//                    log.debug("path = {}", path.toString());
+
+                    if(Files.isDirectory(path)) {
+                        dirList.add(path.toString());
+                    } else {
+                        fileList.add(path.toString());
+                    }
                 }
             } catch (IOException e) {
                 log.error("io exception");
             }
         } else {
-            list.add(direcotryPath.toString());
+            fileList.add(direcotryPath.toString());
         }
 
-        for(String s : exclude) {
-            log.info("text ex = {} ", s);
+        Map listBox = Maps.newHashMap();
+        listBox.put("file", fileList);
+        listBox.put("dir", dirList);
 
-        }
-
-        return list;
+        return listBox;
     }
 
     public boolean isSupport(String path) {
