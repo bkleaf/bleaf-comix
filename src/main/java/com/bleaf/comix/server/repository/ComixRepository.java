@@ -1,5 +1,6 @@
 package com.bleaf.comix.server.repository;
 
+import com.bleaf.comix.server.repository.filter.ComixFilter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Data;
@@ -23,12 +24,12 @@ import java.util.Map;
 @Repository
 @ConfigurationProperties(prefix = "bleafcomix.repository")
 public class ComixRepository {
-
     private String defaultRoot;
-
-    private List<String> exclude;
-    private List<String> imageType;
     private Map<String, List<String>> compressType;
+
+    private List<String> excludeFile1;
+    private List<String> excludeFile2;
+    private List<String> includeFile;
 
     /**
      * root 하위 1depth의 디렉토리 또는 file list를 돌려준다.
@@ -37,18 +38,18 @@ public class ComixRepository {
      * @return
      */
     public Map<String, List<String>> getPath(String root) {
-        log.trace("request Root Path = {}", root);
+        log.debug("request Root Path = {}", root);
         List<String> fileList = Lists.newLinkedList();
         List<String> dirList = Lists.newLinkedList();
 
         Path direcotryPath = Paths.get(defaultRoot, root);
         if (Files.isDirectory(direcotryPath)) {
             try (DirectoryStream<Path> stream =
-                         Files.newDirectoryStream(direcotryPath)) {
+                         Files.newDirectoryStream(direcotryPath,
+                                 new ComixFilter(excludeFile1,
+                                         excludeFile2,
+                                         includeFile))) {
                 for (Path path : stream) {
-
-//                    log.debug("path = {}", path.toString());
-
                     if(Files.isDirectory(path)) {
                         dirList.add(path.toString());
                     } else {
@@ -68,8 +69,5 @@ public class ComixRepository {
 
         return listBox;
     }
-
-    public boolean isSupport(String path) {
-        return false;
-    }
 }
+

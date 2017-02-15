@@ -1,15 +1,19 @@
 bleafcomix:
   repository:
-    default_root: "/Users/bleaf/"
-    exclude:
+    default_root: "D:"
+    compress_type:
+      zip: ["zip", "cbz"]
+      rar: ["rar", "cbr"]
+    exclude_file1:
       - "."
       - ".."
       - "@eaDir"
       - "Thumbs.db"
       - ".DS_Store"
       - "@Recycle"
+    exclude_file2:
       - "__MACOSX"
-    image_type:
+    include_file:
       - "jpg"
       - "gif"
       - "png"
@@ -17,9 +21,11 @@ bleafcomix:
       - "bmp"
       - "jpeg"
       - "tiff"
-    compress_type:
-      zip: ["zip", "cbz"]
-      rar: ["rar", "cbr"]
+      - "zip"
+      - "cbz"
+      - "rar"
+      - "cbr"
+
 
 server:
   port: 8888

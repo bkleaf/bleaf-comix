@@ -21,10 +21,10 @@ public class ComixService {
     ComixRepository comixRepository;
 
     public String getPath(String path) {
-        if (isZip(path)) {
-            log.info("path = {} is zip!!!", path);
-            return null;
-        }
+//        if (isZip(path)) {
+//            log.info("path = {} is zip!!!", path);
+//            return null;
+//        }
 
         Map<String, List<String>> listBox = comixRepository.getPath(path);
 
