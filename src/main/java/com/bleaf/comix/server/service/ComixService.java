@@ -1,13 +1,14 @@
 package com.bleaf.comix.server.service;
 
+import com.bleaf.comix.server.configuration.ComixPathConfig;
 import com.bleaf.comix.server.configuration.PathType;
 import com.bleaf.comix.server.repository.ComixRepository;
 import com.bleaf.comix.server.utillity.ComixTools;
-import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -38,30 +39,4 @@ public class ComixService {
 
         return stringBuffer.toString();
     }
-
-
-    private PathType getPathType(String path) {
-
-
-
-        return PathType.DIR;
-    }
-
-
-    private boolean isZip(String path) {
-        String ext = Files.getFileExtension(path);
-
-        String fileName = Files.getNameWithoutExtension(path);
-
-        log.info("zip path = {} : {} : {}", path, fileName, ext);
-        if (ext.equalsIgnoreCase("zip") ||
-                ext.equalsIgnoreCase("cbz")) {
-
-
-            return true;
-        }
-
-        return false;
-    }
-
 }

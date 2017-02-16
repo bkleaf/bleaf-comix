@@ -1,10 +1,12 @@
 package com.bleaf.comix.server.repository;
 
+import com.bleaf.comix.server.configuration.ComixPathConfig;
 import com.bleaf.comix.server.repository.filter.ComixFilter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Repository;
 
@@ -24,12 +26,10 @@ import java.util.Map;
 @Repository
 @ConfigurationProperties(prefix = "bleafcomix.repository")
 public class ComixRepository {
-    private String defaultRoot;
-    private Map<String, List<String>> compressType;
+    @Autowired
+    ComixPathConfig comixPathConfig;
 
-    private List<String> excludeFile1;
-    private List<String> excludeFile2;
-    private List<String> includeFile;
+    private String defaultRoot;
 
     /**
      * root 하위 1depth의 디렉토리 또는 file list를 돌려준다.
@@ -46,9 +46,9 @@ public class ComixRepository {
         if (Files.isDirectory(direcotryPath)) {
             try (DirectoryStream<Path> stream =
                          Files.newDirectoryStream(direcotryPath,
-                                 new ComixFilter(excludeFile1,
-                                         excludeFile2,
-                                         includeFile))) {
+                                 new ComixFilter(comixPathConfig.getExcludeFile1(),
+                                         comixPathConfig.getExcludeFile2(),
+                                         comixPathConfig.getIncludeFile()))) {
                 for (Path path : stream) {
                     if(Files.isDirectory(path)) {
                         dirList.add(path.toString());

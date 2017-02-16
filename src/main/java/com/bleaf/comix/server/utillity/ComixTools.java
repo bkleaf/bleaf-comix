@@ -1,10 +1,11 @@
 package com.bleaf.comix.server.utillity;
 
-import java.util.List;
+import com.bleaf.comix.server.configuration.PathType;
 import org.mozilla.universalchardet.UniversalDetector;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by drg75 on 2017-02-12.
@@ -13,7 +14,7 @@ public class ComixTools {
     public static String makeStringList(List<String> list) {
         StringBuffer strList = new StringBuffer();
 
-        for(String path : list) {
+        for (String path : list) {
             strList.append(path).append("\n");
         }
 
