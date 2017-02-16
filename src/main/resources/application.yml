@@ -1,5 +1,13 @@
 bleafcomix:
   config:
+    image_type:
+      - "jpg"
+      - "gif"
+      - "png"
+      - "tif"
+      - "bmp"
+      - "jpeg"
+      - "tiff"
     compress_type:
       zip: ["zip", "cbz"]
       rar: ["rar", "cbr"]
@@ -12,25 +20,14 @@ bleafcomix:
       - "@Recycle"
     exclude_file2:
       - "__MACOSX"
-    include_file:
-      - "jpg"
-      - "gif"
-      - "png"
-      - "tif"
-      - "bmp"
-      - "jpeg"
-      - "tiff"
-      - "zip"
-      - "cbz"
-      - "rar"
-      - "cbr"
+
 
 server:
   port: 8888
 
 spring:
   profiles:
-    active: mac
+    active: win
 
 
 ---

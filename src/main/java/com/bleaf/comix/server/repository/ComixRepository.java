@@ -1,7 +1,9 @@
 package com.bleaf.comix.server.repository;
 
 import com.bleaf.comix.server.configuration.ComixPathConfig;
+import com.bleaf.comix.server.configuration.PathType;
 import com.bleaf.comix.server.repository.filter.ComixFilter;
+import com.bleaf.comix.server.utillity.ComixTools;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Data;
@@ -29,23 +31,17 @@ public class ComixRepository {
     @Autowired
     ComixPathConfig comixPathConfig;
 
-    private String defaultRoot;
+    @Autowired
+    ComixTools comixTools;
 
-    /**
-     * root 하위 1depth의 디렉토리 또는 file list를 돌려준다.
-     *
-     * @param root
-     * @return
-     */
-    public Map<String, List<String>> getPath(String root) {
-        log.debug("request Root Path = {}", root);
+    public Map<String, List<String>> getList(Path requestPath, PathType pathType) {
+        log.debug("request Root Path = {}", requestPath);
         List<String> fileList = Lists.newLinkedList();
         List<String> dirList = Lists.newLinkedList();
 
-        Path direcotryPath = Paths.get(defaultRoot, root);
-        if (Files.isDirectory(direcotryPath)) {
+        if(pathType == PathType.DIR) {
             try (DirectoryStream<Path> stream =
-                         Files.newDirectoryStream(direcotryPath,
+                         Files.newDirectoryStream(requestPath,
                                  new ComixFilter(comixPathConfig.getExcludeFile1(),
                                          comixPathConfig.getExcludeFile2(),
                                          comixPathConfig.getIncludeFile()))) {
@@ -62,7 +58,7 @@ public class ComixRepository {
         } else {
 
 
-            fileList.add(direcotryPath.toString());
+            fileList.add(requestPath.toString());
         }
 
         Map listBox = Maps.newHashMap();

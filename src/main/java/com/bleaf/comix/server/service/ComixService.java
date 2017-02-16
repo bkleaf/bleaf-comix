@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +21,13 @@ import java.util.Map;
 @Slf4j
 public class ComixService {
     @Autowired
+    ComixPathConfig comixPathConfig;
+
+    @Autowired
     ComixRepository comixRepository;
+
+    @Autowired
+    ComixTools comixTools;
 
     public String getPath(String path) {
 //        if (isZip(path)) {
@@ -27,16 +35,27 @@ public class ComixService {
 //            return null;
 //        }
 
-        Map<String, List<String>> listBox = comixRepository.getPath(path);
+        Path requestPath = Paths.get(this.comixPathConfig.getDefaultRoot(), path);
+        PathType pathType = this.comixTools.getPathType(requestPath);
 
+        if(pathType == PathType.NONE) {
+            //TODO 오류 메시지
+            return "INVALID PATH";
+        } else if(pathType == PathType.IMAGE) {
+            //TODO image 처리
+        } else if(pathType == PathType.ZIP
+            || pathType == PathType.RAR
+            || pathType == PathType.DIR) {
+            // TODO get list 처리
+        }
 
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(ComixTools.makeStringList(listBox.get("file")));
-        stringBuffer.append(ComixTools.makeStringList(listBox.get("dir")));
+//        Map<String, List<String>> listBox = comixRepository.getPath(path);
+//
+//
+//        StringBuffer stringBuffer = new StringBuffer();
+//        stringBuffer.append(comixTools.makeStringList(listBox.get("file")));
+//        stringBuffer.append(comixTools.makeStringList(listBox.get("dir")));
 
-
-        log.debug("list = {}", stringBuffer);
-
-        return stringBuffer.toString();
+        return null;
     }
 }
