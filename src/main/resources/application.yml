@@ -28,6 +28,11 @@ bleafcomix:
 server:
   port: 8888
 
+spring:
+  profiles:
+    active: mac
+
+
 ---
 
 spring:

@@ -1,15 +1,18 @@
 package com.bleaf.comix.server.utillity;
 
 import com.bleaf.comix.server.configuration.PathType;
+import lombok.extern.slf4j.Slf4j;
 import org.mozilla.universalchardet.UniversalDetector;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
  * Created by drg75 on 2017-02-12.
  */
+@Slf4j
 public class ComixTools {
     public static String makeStringList(List<String> list) {
         StringBuffer strList = new StringBuffer();
@@ -35,13 +38,17 @@ public class ComixTools {
 
         String encoding = detector.getDetectedCharset();
         if (encoding != null) {
-            System.out.println("Detected encoding = " + encoding);
+            log.debug("Detected encoding = " + encoding);
         } else {
-            System.out.println("No encoding detected.");
+            log.debug("No encoding detected.");
         }
 
         detector.reset();
 
         return encoding;
+    }
+
+    public static PathType getPathType(Path path) {
+        return PathType.DIR;
     }
 }

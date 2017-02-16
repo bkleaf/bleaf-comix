@@ -60,6 +60,8 @@ public class ComixRepository {
                 log.error("io exception");
             }
         } else {
+
+
             fileList.add(direcotryPath.toString());
         }
 
