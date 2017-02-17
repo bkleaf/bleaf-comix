@@ -8,9 +8,8 @@ bleafcomix:
       - "bmp"
       - "jpeg"
       - "tiff"
-    compress_type:
-      zip: ["zip", "cbz"]
-      rar: ["rar", "cbr"]
+    zip_type: [zip, cbz]
+    rar_type: [rar, cbr]
     exclude_file1:
       - "."
       - ".."
@@ -20,6 +19,8 @@ bleafcomix:
       - "@Recycle"
     exclude_file2:
       - "__MACOSX"
+    encoding: utf-8
+    decoding: euc-kr
 
 
 server:
@@ -42,7 +43,7 @@ bleafcomix:
 ---
 
 spring:
-  profiles: win
+  profiles: mac
 
 bleafcomix:
   repository:

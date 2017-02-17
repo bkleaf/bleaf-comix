@@ -25,8 +25,8 @@ public class ComixPathConfig {
 
     private List<String> imageType;
 
-    @NestedConfigurationProperty
-    private Map<String, List<String>> compressType;
+    private List<String> zipType;
+    private List<String> rarType;
 
     private List<String> excludeFile1;
     private List<String> excludeFile2;
@@ -35,12 +35,8 @@ public class ComixPathConfig {
     @PostConstruct
     public void init() {
         includeFile = Lists.newArrayList(imageType);
-
-        String key;
-        for(Iterator<String> iterator=compressType.keySet().iterator(); iterator.hasNext();) {
-            key = iterator.next();
-            includeFile.addAll(compressType.get(key));
-        }
+        includeFile.addAll(zipType);
+        includeFile.addAll(rarType);
 
         log.info("create include file list = {}", includeFile);
     }

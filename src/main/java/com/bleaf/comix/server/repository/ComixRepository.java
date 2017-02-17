@@ -34,6 +34,9 @@ public class ComixRepository {
     @Autowired
     ComixTools comixTools;
 
+    String encoding;
+    String decoding;
+
     public Map<String, List<String>> getList(Path requestPath, PathType pathType) {
         log.debug("request Root Path = {}", requestPath);
         List<String> fileList = Lists.newLinkedList();
@@ -55,10 +58,10 @@ public class ComixRepository {
             } catch (IOException e) {
                 log.error("io exception");
             }
-        } else {
+        } else if(pathType == PathType.ZIP) {
 
+        } else if(pathType == PathType.RAR) {
 
-            fileList.add(requestPath.toString());
         }
 
         Map listBox = Maps.newHashMap();
