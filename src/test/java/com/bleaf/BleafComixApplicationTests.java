@@ -1,13 +1,19 @@
 package com.bleaf;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -18,47 +24,48 @@ public class BleafComixApplicationTests {
 
     @Test
     public void contextLoads() {
-        Path p = Paths.get("D:/My Download/GREEN WORLDZ.rar/1.jpg");
 
-        log.debug("Path = {}", p.toString());
+		try {
 
-        int count = p.getNameCount();
+//			SeekableInMemoryByteChannel
 
-        String p1 = p.getName(count - 2).toString();
+			FileInputStream fis = new FileInputStream("D:\\My Download\\cert.zip");
+//			ZipArchiveInputStream zis = new ZipArchiveInputStream(fis, "EUC-KR", false);
+			ZipArchiveInputStream zis = new ZipArchiveInputStream(fis);
 
-        log.debug("path count = {} : {}", count, p1);
+			String name;
+			ZipArchiveEntry entry;
+
+			while((entry = zis.getNextZipEntry()) != null) {
+                name = entry.getName();
+                log.debug("zip name = {}", name);
+
+                if(!entry.getName().equals("cert.pem")) continue;
+
+                File outFile = new File("D:\\My Download\\cert.pem");
+                outFile.createNewFile();
+
+                FileOutputStream out = new FileOutputStream(outFile);
+                BufferedOutputStream bos = new BufferedOutputStream(out);
+
+                byte[] b = new byte[1024];
+                int length=0;
+                while((length = zis.read(b)) > 0) {
+                    bos.write(b, 0, length);
+                }
 
 
-//		String rarFile = "D:/My Download/Yamato.Nadeshiko.DVDRip.x264.AC3-YYeTs_KOR.rar";
-//		String rarFile = "D:/My Download/GREEN WORLDZ.rar";
-//		File f = new File(rarFile);
-//
-//		Archive a = null;
-//		try {
-//			a = new Archive(new FileVolumeManager(f));
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//
-//		if( a != null) {
-//			a.getMainHeader().print();
-//			FileHeader fh = a.nextFileHeader();
-//
-//			while (fh != null) {
-//				try {
-//					log.debug("file header = {} : {}", getEncoding(fh.getFileNameString()), fh.getFileNameString() );
-//
-//					String fileName = fh.getFileNameString();
-//					String fileName2 = new String(fileName.getBytes(), Charset.forName("euc-kr"));
-//
-//					log.debug("encoding = {}", fileName2);
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//				fh = a.nextFileHeader();
-//			}
-//		}
+                bos.close();
+                out.close();
+            }
+
+
+
+            zis.close();
+			fis.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
 
     public static String getEncoding(String path) throws IOException {

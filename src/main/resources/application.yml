@@ -1,26 +1,28 @@
 bleafcomix:
   config:
-    image_type:
-      - "jpg"
-      - "gif"
-      - "png"
-      - "tif"
-      - "bmp"
-      - "jpeg"
-      - "tiff"
-    zip_type: [zip, cbz]
-    rar_type: [rar, cbr]
-    exclude_file1:
-      - "."
-      - ".."
-      - "@eaDir"
-      - "Thumbs.db"
-      - ".DS_Store"
-      - "@Recycle"
-    exclude_file2:
-      - "__MACOSX"
-    encoding: utf-8
-    decoding: euc-kr
+    path:
+      image_type:
+        - "jpg"
+        - "gif"
+        - "png"
+        - "tif"
+        - "bmp"
+        - "jpeg"
+        - "tiff"
+      zip_type: [zip, cbz]
+      rar_type: [rar, cbr]
+      exclude_file1:
+        - "."
+        - ".."
+        - "@eaDir"
+        - "Thumbs.db"
+        - ".DS_Store"
+        - "@Recycle"
+      exclude_file2:
+        - "__MACOSX"
+    tools:
+      encoding: utf-8
+      decoding: euc-kr
 
 
 server:

@@ -2,13 +2,20 @@ package com.bleaf.comix.server.utillity;
 
 import com.bleaf.comix.server.configuration.ComixPathConfig;
 import com.bleaf.comix.server.configuration.PathType;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -18,10 +25,31 @@ import java.util.List;
  */
 @Slf4j
 @Component
+@ConfigurationProperties(prefix = "bleafcomix.config.tools")
 public class ComixTools {
 
     @Autowired
     ComixPathConfig comixPathConfig;
+
+    @Setter
+    String encoding;
+    @Setter
+    String decoding;
+
+    Charset encodingCharset;
+    Charset decodingCharset;
+
+    boolean isCharConvert = false;
+
+    @PostConstruct
+    public void init() {
+        if(!(encoding.equals(decoding))) {
+            isCharConvert = true;
+
+            encodingCharset = Charset.forName(encoding);
+            decodingCharset = Charset.forName(decoding);
+        }
+    }
 
     public String makeStringList(List<String> list) {
         StringBuffer strList = new StringBuffer();
@@ -33,7 +61,7 @@ public class ComixTools {
         return strList.toString();
     }
 
-    public String getEncoding(String path) throws IOException {
+    public String getCharsetStr(String path) throws IOException {
         byte[] buf = new byte[4096];
         java.io.FileInputStream fis = new FileInputStream(path);
 
@@ -62,11 +90,9 @@ public class ComixTools {
             } else if(this.isRar((fileName))) {
                 return PathType.RAR;
             } else {
-
                 String ext = com.google.common.io.Files.getFileExtension(fileName);
                 if(comixPathConfig.getImageType().contains(ext)) {
                     int count = path.getNameCount();
-
                     // index 0 부터 시작, 마지막 path 앞의 path를 꺼냄.
                     String checkPath = path.getName((count - 2)).toString();
                     String ext2 = com.google.common.io.Files.getFileExtension(checkPath);
@@ -84,20 +110,23 @@ public class ComixTools {
         return PathType.NONE;
     }
 
-//    String str = new String("헬로월드!");
-//
-//    Charset eucKRCharset = Charset.forName("EUC-KR");
-//    CharBuffer sourceBuffer = CharBuffer.wrap(str.toCharArray());
-//    ByteBuffer resultByteBuffer = eucKRCharset.encode(sourceBuffer);
-//    byte[] resultBytes =  resultByteBuffer.array();
-//// EUC-KR 의 String 을 생성할 때, 두번째 인자값으로 인코딩 정보를 넣어준다.
-//System.out.println(new String(resultBytes, eucKRCharset));
-//// 만약 인코딩 정보를 넣지 않는다면 에러 스트링이(�, 0xfffd) 이 출력될 것이다.
-//System.out.println(new String(resultBytes));
-//
-//    // 원래의 UTF-8 로 디코딩.
-//    CharBuffer charBuffer = eucKRCharset.decode(ByteBuffer.wrap(resultBytes));
-//System.out.println(charBuffer.toString());
+    public String convertCharset(String str) {
+        if(!isCharConvert) return str;
+
+        log.debug("origin string = {}", str);
+
+        CharBuffer sourceBuffer = CharBuffer.wrap(str.toCharArray());
+        ByteBuffer resultByteBuffer = decodingCharset.encode(sourceBuffer);
+        byte[] resultBytes =  resultByteBuffer.array();
+
+        String convertStr = new String(resultBytes, decodingCharset);
+        log.debug("convert str = {}", convertStr);
+
+        // 원래의 UTF-8 로 디코딩.
+        //CharBuffer charBuffer = eucKRCharset.decode(ByteBuffer.wrap(resultBytes));
+
+        return convertStr;
+    }
 
     /**
      * 확장자를 검사한 후 ".zip" 또는 ".cbz"인지를 재검사한다
