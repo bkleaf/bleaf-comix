@@ -136,8 +136,8 @@ public class ComixTools {
     public boolean isZip(String fileName) {
         String ext = com.google.common.io.Files.getFileExtension(fileName).toLowerCase();
         for(String zip : this.comixPathConfig.getZipType()) {
-            if(ext.equals(zip)) {
-                return fileName.endsWith("." + zip);
+            if(ext.equals(zip) && fileName.endsWith(("." + zip))) {
+                return true;
             }
         }
 
@@ -152,8 +152,8 @@ public class ComixTools {
     public boolean isRar(String fileName) {
         String ext = com.google.common.io.Files.getFileExtension(fileName).toLowerCase();
         for(String rar : this.comixPathConfig.getRarType()) {
-            if(ext.equals(rar)) {
-                return fileName.endsWith("." + rar);
+            if(ext.equals(rar) && fileName.endsWith(("." + rar))) {
+                return true;
             }
         }
 
