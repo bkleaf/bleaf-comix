@@ -32,6 +32,15 @@ spring:
   profiles:
     active: win
 
+---
+
+spring:
+  profiles: nas
+
+bleafcomix:
+  config:
+    path:
+      default_root: "/User/bleaf/"
 
 ---
 
@@ -39,14 +48,16 @@ spring:
   profiles: mac
 
 bleafcomix:
-  repository:
-    default_root: "/User/bleaf/"
+  config:
+    path:
+      default_root: "/User/bleaf/"
 
 ---
 
 spring:
-  profiles: mac
+  profiles: win
 
 bleafcomix:
-  repository:
-    default_root: "D:"
+  config:
+    path:
+      default_root: "D:"

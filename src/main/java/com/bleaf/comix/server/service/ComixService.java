@@ -36,7 +36,10 @@ public class ComixService {
 //        }
 
         Path requestPath = Paths.get(this.comixPathConfig.getDefaultRoot(), path);
+        log.debug("server request path = {}", requestPath);
+
         PathType pathType = this.comixTools.getPathType(requestPath);
+        log.debug("path type = {}", pathType);
 
         if(pathType == PathType.NONE) {
             //TODO 오류 메시지
@@ -46,7 +49,9 @@ public class ComixService {
         } else if(pathType == PathType.ZIP
             || pathType == PathType.RAR
             || pathType == PathType.DIR) {
-            // TODO get list 처리
+
+            List<List<String>> listBox =
+                    comixRepository.getList(requestPath, pathType);
         }
 
 //        Map<String, List<String>> listBox = comixRepository.getPath(path);
