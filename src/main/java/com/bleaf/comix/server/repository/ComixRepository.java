@@ -5,10 +5,10 @@ import com.bleaf.comix.server.configuration.PathType;
 import com.bleaf.comix.server.repository.filter.ComixFilter;
 import com.bleaf.comix.server.utillity.ComixTools;
 import com.github.junrar.Archive;
+import com.github.junrar.exception.RarException;
 import com.github.junrar.impl.FileVolumeManager;
 import com.github.junrar.rarfile.FileHeader;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -21,9 +21,7 @@ import java.io.*;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by drg75 on 2017-02-12.
@@ -46,18 +44,98 @@ public class ComixRepository {
         log.debug("request Root Path = {}", requestPath);
 
         List<List<String>> list = null;
-        if(pathType == PathType.DIR) {
+        if (pathType == PathType.DIR) {
             return getDirecotryList(requestPath);
-        } else if(pathType == PathType.ZIP) {
+        } else if (pathType == PathType.ZIP) {
             list = Lists.newArrayList();
             list.add(this.getZipList(requestPath));
 
             return list;
-        } else if(pathType == PathType.RAR) {
+        } else if (pathType == PathType.RAR) {
             list = Lists.newArrayList();
             list.add(this.getRarList(requestPath));
 
             return list;
+        }
+
+        return null;
+    }
+
+    public InputStream getImage(Path requestPath, PathType pathType) throws Exception {
+        if (pathType == PathType.IMAGE) {
+            File file = requestPath.toFile();
+
+            if (file.isFile() && file.exists()) {
+                return new FileInputStream(file);
+            }
+        } else if (pathType == PathType.FILEINZIP) {
+            Path zipPath = comixTools.getCompressPath(requestPath);
+            return this.getImageInZip(zipPath, requestPath.getFileName().toString());
+
+        } else if (pathType == PathType.FILEINRAR) {
+            Path rarPath = comixTools.getCompressPath(requestPath);
+            return this.getImageInRar(rarPath, requestPath.getFileName().toString());
+        }
+
+        return null;
+    }
+
+    public InputStream getImageInZip(Path zipPath, String fileName) {
+
+        log.debug("get image in zip = {} : {}", fileName, zipPath);
+
+        try (FileInputStream fis = new FileInputStream(zipPath.toFile());
+             ZipArchiveInputStream zis = new ZipArchiveInputStream(fis);
+             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+
+            String entryName;
+            ZipArchiveEntry entry;
+            while ((entry = zis.getNextZipEntry()) != null) {
+                entryName = entry.getName();
+                log.debug("zip file entry name = {}", entryName);
+
+                if (entryName.toLowerCase().equals(fileName)) {
+                    byte[] b = new byte[1024];
+                    int length = 0;
+                    while ((length = zis.read(b)) > 0) {
+                        baos.write(b, 0, length);
+                    }
+
+                    return new ByteArrayInputStream(baos.toByteArray());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public InputStream getImageInRar(Path rarPath, String fileName) {
+        log.debug("get image in rar = {} : {}", fileName, rarPath);
+
+        File f = rarPath.toFile();
+
+        Archive archive = null;
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+
+            archive = new Archive(new FileVolumeManager(f));
+            if (archive != null) {
+                FileHeader fh;
+                String entryName;
+                while ((fh = archive.nextFileHeader()) != null) {
+                    entryName = this.comixTools.convertCharset(fh.getFileNameString());
+
+                    if (entryName.toLowerCase().equals(fileName)) {
+                        log.debug("entry name = {} : {}", entryName, fileName);
+                        archive.extractFile(fh, baos);
+
+                        return new ByteArrayInputStream(baos.toByteArray());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return null;
@@ -91,34 +169,18 @@ public class ComixRepository {
     public List<String> getZipList(Path requestPath) {
         List<String> list = Lists.newArrayList();
         try (FileInputStream fis = new FileInputStream(requestPath.toFile());
-                ZipArchiveInputStream zis  = new ZipArchiveInputStream(fis)) {
+             ZipArchiveInputStream zis = new ZipArchiveInputStream(fis)) {
 
             String entryName;
             ZipArchiveEntry entry;
 
 
-            while((entry = zis.getNextZipEntry()) != null) {
+            while ((entry = zis.getNextZipEntry()) != null) {
                 entryName = entry.getName();
-                log.debug("zip file entry name = {}", entryName);
-
                 list.add(entryName);
 
-
-
-
-//                    FileOutputStream out = new FileOutputStream(outFile);
-//                    BufferedOutputStream bos = new BufferedOutputStream(out);
-//
-//                    byte[] b = new byte[1024];
-//                    int length = 0;
-//                    while ((length = zis.read(b)) > 0) {
-//                        bos.write(b, 0, length);
-//                    }
-//
-//
-//                    bos.close();
-//                    out.close();
-                }
+                log.debug("file in zip entry name = {}", entryName);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -129,37 +191,29 @@ public class ComixRepository {
     public List<String> getRarList(Path requestPath) {
         File f = requestPath.toFile();
 
-		Archive archive = null;
-		try {
-			archive = new Archive(new FileVolumeManager(f));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        Archive archive = null;
+        try {
+            archive = new Archive(new FileVolumeManager(f));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		List<String> list = null;
-		if( archive != null) {
-		    list = Lists.newLinkedList();
+        List<String> list = null;
+        if (archive != null) {
+            list = Lists.newLinkedList();
 //			archive.getMainHeader().print();
 
             FileHeader fh;
             String entryName;
-			while ((fh = archive.nextFileHeader()) != null) {
-				try {
-					log.debug("file header = {} : {}",
-                            this.comixTools.getCharsetStr(fh.getFileNameString()),
-                            fh.getFileNameString() );
+            while ((fh = archive.nextFileHeader()) != null) {
+                entryName = this.comixTools.convertCharset(fh.getFileNameString());
+                list.add(entryName);
 
-					entryName = this.comixTools.convertCharset(fh.getFileNameString());
-					log.debug("fileheader encoding = {}", entryName);
+                log.debug("file in rar entry name = {}", entryName);
+            }
+        }
 
-                    list.add(entryName);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		return list;
+        return list;
     }
 }
 

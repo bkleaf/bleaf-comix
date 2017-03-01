@@ -2,6 +2,8 @@ package com.bleaf.comix.server.utillity;
 
 import com.bleaf.comix.server.configuration.ComixPathConfig;
 import com.bleaf.comix.server.configuration.PathType;
+import com.google.common.base.Splitter;
+import com.google.common.net.MediaType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -18,6 +21,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -25,7 +29,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-@ConfigurationProperties(prefix = "bleafcomix.config.tools")
+@ConfigurationProperties(prefix = "comix.config.tools")
 public class ComixTools {
 
     @Autowired
@@ -61,17 +65,19 @@ public class ComixTools {
         return strList.toString();
     }
 
-    public String getCharsetStr(String path) throws IOException {
+    public String getCharsetStr(String path) {
         byte[] buf = new byte[4096];
-        java.io.FileInputStream fis = new FileInputStream(path);
 
         UniversalDetector detector = new UniversalDetector(null);
-
-        int nread;
-        while ((nread = fis.read(buf)) > 0 && !detector.isDone()) {
-            detector.handleData(buf, 0, nread);
+        try (FileInputStream fis = new FileInputStream(path)) {
+            int nread;
+            while ((nread = fis.read(buf)) > 0 && !detector.isDone()) {
+                detector.handleData(buf, 0, nread);
+            }
+            detector.dataEnd();
+        } catch(IOException e) {
+            e.printStackTrace();
         }
-        detector.dataEnd();
 
         String encoding = detector.getDetectedCharset();
         detector.reset();
@@ -110,6 +116,27 @@ public class ComixTools {
         return PathType.NONE;
     }
 
+    public Path getCompressPath(Path path) {
+        log.debug("full path = {}", path);
+        List<String> sp = Splitter
+                .on(File.separator)
+                .splitToList(path.toString());
+
+        int idx=0;
+        for(String s : sp) {
+            if(this.isZip(s) || this.isRar(s)) {
+                break;
+            }
+
+            idx++;
+        }
+
+        Path p = path.subpath(0, idx);
+        log.debug("subPath path = {} : {}", path.getRoot(),  p);
+
+        return Paths.get(path.getRoot().toString(), p.toString());
+    }
+
     public String convertCharset(String str) {
         if(!isCharConvert) return str;
 
@@ -126,6 +153,17 @@ public class ComixTools {
         //CharBuffer charBuffer = eucKRCharset.decode(ByteBuffer.wrap(resultBytes));
 
         return convertStr;
+    }
+
+    public boolean isImage(String fileName) {
+        String ext = com.google.common.io.Files.getFileExtension(fileName).toLowerCase();
+        for(String img : this.comixPathConfig.getImageType()) {
+            if(ext.equals(img) && fileName.endsWith(("." + img))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -158,5 +196,27 @@ public class ComixTools {
         }
 
         return false;
+    }
+
+    public MediaType getMediaType(String fileName) {
+        String ext = com.google.common.io.Files.getFileExtension(fileName).toLowerCase();
+        switch(ext) {
+            case "jpg" :
+                return MediaType.JPEG;
+            case "jpeg" :
+                return MediaType.JPEG;
+            case "gif" :
+                return MediaType.GIF;
+            case "png" :
+                return MediaType.PNG;
+            case "tiff" :
+                return MediaType.TIFF;
+            case "tif" :
+                return MediaType.TIFF;
+            case "bmp" :
+                return MediaType.BMP;
+            default :
+                return MediaType.JPEG;
+        }
     }
 }

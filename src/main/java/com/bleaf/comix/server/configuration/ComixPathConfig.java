@@ -19,7 +19,7 @@ import java.util.Map;
 @Slf4j
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "bleafcomix.config.path")
+@ConfigurationProperties(prefix = "comix.config.path")
 public class ComixPathConfig {
     private String defaultRoot;
 

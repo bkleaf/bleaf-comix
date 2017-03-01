@@ -15,7 +15,16 @@ ENV LC_ALL ko_KR.UTF-8
 RUN mv /etc/localtime /etc/localimte_origin
 RUN ln -s /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
-RUN apt-get purge openjdk
+RUN apt-get purge openjdk*
+
+RUN apt-get install -y software-properties-common
+
+RUN add-apt-repository -y ppa:webupd8team/java
+RUN apt-get update
+RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+RUN apt-get install -y oracle-java8-installer
+
+ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
 RUN apt-get install -y nginx
 
@@ -23,10 +32,7 @@ RUN rm -f /etc/nginx/sites-available/default
 #RUN rm -f /etc/nginx/nginx.conf
 
 ADD conf/default /etc/nginx/sites-available/
-#ADD conf/nginx.conf /etc/nginx/
 ADD conf/aircomix.conf /etc/nginx/sites-enabled/
-
-RUN apt-get install -y php5-fpm
 
 VOLUME ["/var/comix","/var/novel","/var/www/","/var/script"]
 

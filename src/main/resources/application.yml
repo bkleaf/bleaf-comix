@@ -1,4 +1,4 @@
-bleafcomix:
+comix:
   config:
     path:
       image_type:
@@ -35,19 +35,19 @@ spring:
 ---
 
 spring:
-  profiles: nas
+  profiles: service
 
-bleafcomix:
+comix:
   config:
     path:
-      default_root: "/User/bleaf/"
+      default_root: "/var/comix"
 
 ---
 
 spring:
   profiles: mac
 
-bleafcomix:
+comix:
   config:
     path:
       default_root: "/User/bleaf/"
@@ -57,7 +57,7 @@ bleafcomix:
 spring:
   profiles: win
 
-bleafcomix:
+comix:
   config:
     path:
       default_root: "D:"
