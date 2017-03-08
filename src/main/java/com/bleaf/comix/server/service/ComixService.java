@@ -48,8 +48,12 @@ public class ComixService {
                     comixRepository.getList(requestPath, pathType);
 
             StringBuffer sb = new StringBuffer();
-            for(List<String> ls : listBox) {
-                sb.append(Joiner.on("\n").skipNulls().join(ls));
+            for(int i=0; i < listBox.size(); i++) {
+                if(i > 0) {
+                    sb.append("\n");
+                }
+
+                sb.append(Joiner.on("\n").skipNulls().join(listBox.get(i)));
             }
 
             log.debug("request list = {}", sb.toString());

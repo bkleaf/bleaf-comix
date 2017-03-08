@@ -1,5 +1,6 @@
 package com.bleaf.comix.server.presentation;
 
+import com.bleaf.comix.server.configuration.ComixPathConfig;
 import com.bleaf.comix.server.service.ComixService;
 import com.bleaf.comix.server.utillity.ComixTools;
 import com.google.common.net.MediaType;
@@ -25,7 +26,6 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/bleafcomix/")
 public class ComixController {
     @Autowired
     ComixService comixService;
@@ -33,14 +33,22 @@ public class ComixController {
     @Autowired
     ComixTools comixTools;
 
+    @Autowired
+    ComixPathConfig comixPathConfig;
+
+    @RequestMapping(path = "/")
+    public String root() {
+        return comixPathConfig.getDefaultPath();
+    }
+
     @RequestMapping({
-            "**/*.jpg",
-            "**/*.gif",
-            "**/*.png",
-            "**/*.tif",
-            "**/*.bmp",
-            "**/*.jpeg",
-            "**/*.tiff"})
+            "/comix/**/*.jpg",
+            "/comix/**/*.gif",
+            "/comix/**/*.png",
+            "/comix/**/*.tif",
+            "/comix/**/*.bmp",
+            "/comix/**/*.jpeg",
+            "/comix/**/*.tiff"})
     public void image(final HttpServletRequest request,
                       final HttpServletResponse response) {
         String path = this.getMatchPath(request);
@@ -65,7 +73,7 @@ public class ComixController {
         }
     }
 
-    @RequestMapping("**/*")
+    @RequestMapping({"/comix", "/comix/**/*"})
     @ResponseBody
     public String comix(final HttpServletRequest request,
                         final HttpServletResponse response) {

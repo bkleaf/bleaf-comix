@@ -17,12 +17,9 @@ import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@Slf4j
 public class BleafComixApplicationTests {
 
-    @Test
+
     public void contextLoads() {
     }
 }

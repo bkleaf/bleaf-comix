@@ -29,16 +29,12 @@ import java.util.List;
 @Slf4j
 @Data
 @Repository
-@ConfigurationProperties(prefix = "bleafcomix.repository")
 public class ComixRepository {
     @Autowired
     ComixPathConfig comixPathConfig;
 
     @Autowired
     ComixTools comixTools;
-
-    String encoding;
-    String decoding;
 
     public List<List<String>> getList(Path requestPath, PathType pathType) {
         log.debug("request Root Path = {}", requestPath);
@@ -154,9 +150,9 @@ public class ComixRepository {
                                      comixPathConfig.getIncludeFile()))) {
             for (Path path : stream) {
                 if (Files.isDirectory(path)) {
-                    dirList.add(path.toString());
+                    dirList.add(path.getFileName().toString());
                 } else {
-                    fileList.add(path.toString());
+                    fileList.add(path.getFileName().toString());
                 }
             }
         } catch (IOException e) {
@@ -173,7 +169,6 @@ public class ComixRepository {
 
             String entryName;
             ZipArchiveEntry entry;
-
 
             while ((entry = zis.getNextZipEntry()) != null) {
                 entryName = entry.getName();

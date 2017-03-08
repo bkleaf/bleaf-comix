@@ -1,6 +1,7 @@
 comix:
   config:
     path:
+      default_path: "comix"
       image_type:
         - "jpg"
         - "gif"
@@ -30,7 +31,7 @@ server:
 
 spring:
   profiles:
-    active: win
+    active: service
 
 ---
 

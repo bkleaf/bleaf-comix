@@ -21,6 +21,8 @@ import java.util.Map;
 @Configuration
 @ConfigurationProperties(prefix = "comix.config.path")
 public class ComixPathConfig {
+    private String defaultPath;
+
     private String defaultRoot;
 
     private List<String> imageType;
