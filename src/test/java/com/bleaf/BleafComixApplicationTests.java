@@ -1,25 +1,27 @@
 package com.bleaf;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mozilla.universalchardet.UniversalDetector;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Collections;
+import java.util.List;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@Slf4j
 public class BleafComixApplicationTests {
 
-
+    @Test
     public void contextLoads() {
+
     }
 }

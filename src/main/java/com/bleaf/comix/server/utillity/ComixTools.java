@@ -158,7 +158,8 @@ public class ComixTools {
     public boolean isImage(String fileName) {
         String ext = com.google.common.io.Files.getFileExtension(fileName).toLowerCase();
         for(String img : this.comixPathConfig.getImageType()) {
-            if(ext.equals(img) && fileName.endsWith(("." + img))) {
+            if(ext.equalsIgnoreCase(img)
+                    && fileName.toLowerCase().endsWith(("." + img))) {
                 return true;
             }
         }
@@ -174,7 +175,8 @@ public class ComixTools {
     public boolean isZip(String fileName) {
         String ext = com.google.common.io.Files.getFileExtension(fileName).toLowerCase();
         for(String zip : this.comixPathConfig.getZipType()) {
-            if(ext.equals(zip) && fileName.endsWith(("." + zip))) {
+            if(ext.equalsIgnoreCase(zip)
+                    && fileName.toLowerCase().endsWith(("." + zip))) {
                 return true;
             }
         }
@@ -190,7 +192,8 @@ public class ComixTools {
     public boolean isRar(String fileName) {
         String ext = com.google.common.io.Files.getFileExtension(fileName).toLowerCase();
         for(String rar : this.comixPathConfig.getRarType()) {
-            if(ext.equals(rar) && fileName.endsWith(("." + rar))) {
+            if(ext.equalsIgnoreCase(rar)
+                    && fileName.toLowerCase().endsWith(("." + rar))) {
                 return true;
             }
         }
@@ -199,7 +202,9 @@ public class ComixTools {
     }
 
     public MediaType getMediaType(String fileName) {
-        String ext = com.google.common.io.Files.getFileExtension(fileName).toLowerCase();
+        String ext =
+                com.google.common.io.Files.getFileExtension(fileName)
+                        .toLowerCase();
         switch(ext) {
             case "jpg" :
                 return MediaType.JPEG;

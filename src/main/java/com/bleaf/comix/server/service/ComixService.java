@@ -76,7 +76,6 @@ public class ComixService {
         if(pathType == PathType.IMAGE
                 || pathType == PathType.FILEINZIP
                 || pathType == PathType.FILEINRAR) {
-            //TODO image 처리
 
             try {
                 InputStream in = comixRepository

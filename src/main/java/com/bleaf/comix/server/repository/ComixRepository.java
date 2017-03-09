@@ -8,7 +8,9 @@ import com.github.junrar.Archive;
 import com.github.junrar.exception.RarException;
 import com.github.junrar.impl.FileVolumeManager;
 import com.github.junrar.rarfile.FileHeader;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -21,6 +23,7 @@ import java.io.*;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -66,11 +69,15 @@ public class ComixRepository {
             }
         } else if (pathType == PathType.FILEINZIP) {
             Path zipPath = comixTools.getCompressPath(requestPath);
-            return this.getImageInZip(zipPath, requestPath.getFileName().toString());
+            return this.getImageInZip(
+                    zipPath,
+                    requestPath.getFileName().toString());
 
         } else if (pathType == PathType.FILEINRAR) {
             Path rarPath = comixTools.getCompressPath(requestPath);
-            return this.getImageInRar(rarPath, requestPath.getFileName().toString());
+            return this.getImageInRar(
+                    rarPath,
+                    requestPath.getFileName().toString());
         }
 
         return null;
@@ -90,7 +97,7 @@ public class ComixRepository {
                 entryName = entry.getName();
                 log.debug("zip file entry name = {}", entryName);
 
-                if (entryName.toLowerCase().equals(fileName)) {
+                if (entryName.toLowerCase().equalsIgnoreCase(fileName)) {
                     byte[] b = new byte[1024];
                     int length = 0;
                     while ((length = zis.read(b)) > 0) {
@@ -100,6 +107,8 @@ public class ComixRepository {
                     return new ByteArrayInputStream(baos.toByteArray());
                 }
             }
+
+            log.error("file not equals = {}", fileName);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -176,6 +185,10 @@ public class ComixRepository {
 
                 log.debug("file in zip entry name = {}", entryName);
             }
+
+            if(list != null) {
+                Collections.sort(list, Ordering.usingToString());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -196,7 +209,6 @@ public class ComixRepository {
         List<String> list = null;
         if (archive != null) {
             list = Lists.newLinkedList();
-//			archive.getMainHeader().print();
 
             FileHeader fh;
             String entryName;
@@ -205,6 +217,10 @@ public class ComixRepository {
                 list.add(entryName);
 
                 log.debug("file in rar entry name = {}", entryName);
+            }
+
+            if(list != null) {
+                Collections.sort(list, Ordering.usingToString());
             }
         }
 

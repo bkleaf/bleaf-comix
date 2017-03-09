@@ -43,12 +43,19 @@ public class ComixController {
 
     @RequestMapping({
             "/comix/**/*.jpg",
+            "/comix/**/*.JPG",
             "/comix/**/*.gif",
+            "/comix/**/*.GIF",
             "/comix/**/*.png",
+            "/comix/**/*.PNG",
             "/comix/**/*.tif",
+            "/comix/**/*.TIF",
             "/comix/**/*.bmp",
+            "/comix/**/*.BMP",
             "/comix/**/*.jpeg",
-            "/comix/**/*.tiff"})
+            "/comix/**/*.JPEG",
+            "/comix/**/*.tiff",
+            "/comix/**/*.TIFF"})
     public void image(final HttpServletRequest request,
                       final HttpServletResponse response) {
         String path = this.getMatchPath(request);
@@ -61,7 +68,7 @@ public class ComixController {
         MediaType mediaType = comixTools.getMediaType(
                 com.google.common.io.Files.getFileExtension(path));
 
-        log.info("media type = {}", mediaType);
+        log.debug("media type = {}", mediaType);
 
         response.setContentType(mediaType.toString());
         try {
@@ -87,15 +94,15 @@ public class ComixController {
     private String getMatchPath(final HttpServletRequest request) {
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-        log.trace("request path = {}", path);
+        log.debug("request path = {}", path);
 
         String bestMatchPattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-        log.trace("match = {}", bestMatchPattern);
+        log.debug("match = {}", bestMatchPattern);
 
         AntPathMatcher apm = new AntPathMatcher();
         String finalPath = apm.extractPathWithinPattern(bestMatchPattern, path);
 
-        log.trace("final path = {}", finalPath);
+        log.debug("final path = {}", finalPath);
 
         return finalPath;
     }
